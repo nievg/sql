@@ -1,0 +1,27 @@
+body{
+  background: #333;
+  color: #ddd;
+  font-family: sans-serif;  ;
+}
+.cmd,
+.var,
+.val,
+.eq,
+.com,
+a{
+  color: #d19a66;
+  font-size: 24px;
+  font-weight: bold;
+}
+.var{color:#abb2bf;}
+.val{color: #98c379;}
+.eq{color: #e5c07b;}
+.cmt{color: #e06252;}
+.fnc{color: #56a99a;}
+a{
+  color: #abb2bf;
+  text-decoration: none;
+  font-size: 18px;
+}
+a:hover{color: #ffd;}
+ul{list-style: none;}

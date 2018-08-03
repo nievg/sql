@@ -1,0 +1,1371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>MariaDB commands</title>
+  <link rel="stylesheet" href="sql_css.css">
+</head>
+<body>
+  <h1>MariaDB commands</h1><a name="cont"> </a>
+  <h2>CRUD - create read update delete</h2>
+  <h2>Съдържание</h2>
+  <ul>
+    <li><a href="#insert">INSERT</a></li>
+    <li><a href="#select">SELECT</a></li>
+    <li><a href="#update">UPDATE</a></li>
+    <li><a href="#delete">DELETE</a></li>
+    <li><a href="#alter">ALTER</a></li>
+    <li><a href="#join">JOIN</a></li>
+  </ul>
+
+
+<hr><br>
+<a name="select" href="#cont">^</a>
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">col4</span>, <span class="var">col2</span>, <span class="var">col3</span>
+      FROM <span class="var">table</span>
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT *
+      FROM <span class="var">table</span>
+     WHERE <span class="var">col = <span class="val">'value'</span></span>
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">*</span>
+      FROM <span class="var">users</span>
+     WHERE <span class="var">last_name = <span class="val">'Ivanov'</span></span>
+       AND <span class="var">create_date</span> IS NOT NULL
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">*</span>
+      FROM <span class="var">users</span>
+     LIMIT <span class="var">3</span>
+           <span class="cmt">-- показва 3 записа</span>
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">*</span>
+      FROM <span class="var">users</span>
+  ORDER BY <span class="var">user_id</span> DESC
+     LIMIT <span class="var">3</span>
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">*</span>
+      FROM <span class="var">users</span>
+     WHERE <span class="var">create_date</span> IS NULL
+  ORDER BY <span class="var">user_id</span> DESC
+     LIMIT <span class="var">3</span>
+           <span class="cmt">-- показва последните 3 записа</span>
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">*</span>
+      FROM <span class="var">users</span>
+     WHERE <span class="var">create_date</span> IS NULL
+  ORDER BY <span class="var">user_id</span> DESC
+     LIMIT <span class="var">3</span>
+  </pre>
+  </div>
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">*</span>
+      FROM <span class="var">users</span>
+     WHERE <span class="var">create_date</span> IS NULL
+  ORDER BY <span class="var">user_id</span> DESC
+     LIMIT <span class="var">10</span>,<span class="var">20</span>
+           <span class="cmt">-- използва се при страниране (paging)
+           -- 10 указва от кой запис да започне
+           -- 20 указва колко записа да се вземат</span>
+  </pre>
+  </div>
+
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">first_name</span>, <span class="var">last_name</span> AS <span class="var">lName</span>
+  	   CONCAT(<span class="var">first_name</span>,' ',<span class="var">last_nam</span>) AS <span class="var">FLName</span>
+      FROM <span class="var">users</span>
+     WHERE <span class="var">create_date</span> IS NULL
+  ORDER BY <span class="var">FLName</span>
+     LIMIT <span class="var">10</span>,<span class="var">20</span>
+           <span class="cmt">/* FLName не може да се използва в клаузата WHERE защото FLName
+              още не е създадено, когато се чете WHERE
+              FLName може да се използва в клаузата ORDER BY */</span>
+  </pre>
+  </div>
+  <div class="cmd">
+  <pre>
+    SELECT DISTINCT <span class="var">first_name</span>, <span class="var">last_name</span>
+      FROM <span class="var">users</span>
+           <span class="cmt">-- DISTINCT се прилага само върху first_name
+           -- DISTINCT връща само по 1 запис от всяка стойност в колоната</span>
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">*</span>
+      FROM <span class="var">users</span>
+     WHERE <span class="var">years</span> >= <span class="var">20</span> AND <span class="var">years</span> <= <span class="var">60</span>
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">*</span>
+      FROM <span class="var">users</span>
+     WHERE <span class="var">years</span> BETWEEN <span class="var">20</span> AND <span class="var">60</span>
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">*</span>
+      FROM <span class="var">users</span>
+     WHERE <span class="var">years</span> IN (<span class="var">40</span>,<span class="var">25</span>,<span class="var">36</span>,<span class="var">38</span>)
+           <span class="cmt">-- OR винаги е за предпочитане да се избягва ???</span>
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT <span class="var">*</span>
+      FROM <span class="var">users</span> AS <span class="var">u</span>
+           <span class="cmt">-- alias на таблица като и при колоните</span>
+  </pre>
+  </div>
+
+  <div class="cmd">
+  <pre>
+    SELECT count(<span class="var">*</span>)
+      FROM <span class="var">table_name</span>
+           <span class="cmt">-- показва колко реда има в таблицата</span>
+  </pre>
+  </div>
+
+
+<hr><br>
+<a name="insert" href="#cont">+</a>
+
+ <div class="cmd">
+ <pre>
+  INSERT INTO <span class="var">table(col2, col3)</span>
+       VALUES (<span class="val">'val2'</span>, <span class="val">'val3'</span>)
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  INSERT INTO <span class="var">table</span>
+       VALUES (<span class="val">'val1'</span>, <span class="val">'val2'</span>, <span class="val">'val3'</span>,<span class="val">... 'valN'</span>)</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  INSERT INTO <span class="var">users(user_name, first_name, last_name)</span>
+       VALUES <span class="var">(<span class="val">'pesho'</span>, <span class="val">'Peter'</span>, <span class="val">'Petrov'</span>)</span>
+              <span class="cmt">/* последователността на колоните може да не следва таблицата, но
+                 последователността на стойностите трябва да следва
+                 последователността на имената на колоните в заявката */</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  INSERT INTO <span class="var">users (years, user_name, first_name, last_name, create_date)</span>
+       VALUES (<span class="val">24</span>, <span class="val">'ivan2'</span>, <span class="val">'Ivanov'</span>, <span class="val">'Ivanov'</span>, <span class="val">'2017-10-16 14:32:20'</span>);
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  INSERT INTO <span class="var">users (years, user_name, first_name, last_name, create_date)</span>
+       VALUES (<span class="val">24</span>, <span class="val">'ivan3'</span>, <span class="val">'Ivanov'</span>, <span class="val">'Ivanov'</span>, <span class="fnc">NOW()</span>);
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  INSERT INTO <span class="var">users (years, user_name, first_name, last_name, create_date)</span>
+       VALUES (<span class="val">12</span>, <span class="val">'ioann'</span>, <span class="val">'Ioann'</span>, <span class="val">'Ivanov'</span>, <span class="fnc">NOW()</span>),
+              (<span class="val">14</span>, <span class="val">'pesho'</span>, <span class="val">'Pesho'</span>, <span class="val">'Peshev'</span>, <span class="fnc">NOW()</span>),
+              (<span class="val">33</span>, <span class="val">'gosho'</span>, <span class="val">'Gosho'</span>, <span class="val">'Goshev'</span>, <span class="fnc">NOW()</span>),
+              (<span class="val">24</span>, <span class="val">'tosho'</span>, <span class="val">'Tosho'</span>, <span class="val">'Toshev'</span>, <span class="fnc">NOW()</span>)
+              <span class="cmt">-- Bulk data</span>
+ </pre>
+ </div>
+
+
+<hr><br>
+<a name="update" href="#cont">^</a>
+
+
+ <div class="cmd">
+ <pre>
+  UPDATE <span class="var">table</span>
+     SET <span class="var">column_1</span> = <span class="val">'value_1'</span>
+   WHERE <span class="var">column_2</span> = <span class="val">'value_2'</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  UPDATE <span class="var">users</span>
+  SELECT <span class="fnc">DISTINCT</span> <span class="var">country</span>
+    FROM <span class="var">cities</span>
+     SET <span class="var">last_name</span> = <span class="val">'Georgiev'</span>
+   WHERE <span class="var">user_id</span> = <span class="val">7</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  UPDATE <span class="var">users</span>
+     SET <span class="var">last_name</span>=<span class="val">'Georgiev'</span>, <span class="var">first_name</span> = <span class="val">'Gogo'</span>
+   WHERE <span class="var">user_id</span> = <span class="val">7</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  UPDATE <span class="var">users</span>
+     SET <span class="var">last_name</span>  = <span class="val">'Georgiev'</span>,
+         <span class="var">first_name</span> = <span class="val">'Gogo'</span>
+   WHERE <span class="var">user_id</span> = <span class="val">7</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  UPDATE <span class="var">users</span>
+     SET <span class="var">last_name</span>  = <span class="val">'Gergiev'</span>
+   WHERE <span class="var">last_name</span>  = <span class="val">'Georgiev'</span>
+     AND <span class="var">first_name</span> = <span class="val">'Gogo'</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  UPDATE <span class="var">users</span>
+     SET <span class="var">last_name</span> = <span class="fnc">CONCAT(<span class="var">first_name</span>, <span class="val">'abc'</span>)</span>
+   WHERE <span class="fnc">true</span>
+         <span class="cmt">-- няма директно конкатениране трябва да се използва функцията
+         -- CONCAT(val1, val2,...), която приема много аргументи</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  UPDATE <span class="var">users</span>
+     SET <span class="var">first_name</span> = <span class="fnc">REPLACE(<span class="var">first_name</span>, <span class="val">'ov'</span>, <span class="val">''</span>)</span>
+   WHERE <span class="fnc">true</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  UPDATE <span class="var">users</span>
+     SET <span class="var">years</span> = <span class="val">100</span>
+   WHERE <span class="var">years</span> <span class="cmt">= NULL -- това винаги връща false дори NULL = NULL</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  UPDATE <span class="var">users</span>
+     SET <span class="var">years</span> = <span class="val">100</span>
+   WHERE <span class="var">years</span> <span class="fnc">IS NULL</span>
+         <span class="cmt">-- това e правилно</span>
+ </pre>
+ </div>
+
+
+<hr><br>
+<a name="delete" href="#cont">^</a>
+
+ <div class="cmd">
+ <pre>
+  DELETE FROM <span class="var">table</span>
+        WHERE <span class="var">col = <span class="val">'val'</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  DELETE FROM <span class="var">users</span>
+        WHERE <span class="var">user_id</span> = <span class="val">3</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  DELETE FROM <span class="var">users</span>
+        WHERE <span class="var">user_id</span> = <span class="val">2</span> <span class="fnc">OR</span> <span class="var">user_id</span> = <span class="val">2</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  DELETE FROM <span class="var">users</span>
+        WHERE <span class="var">user_id</span> <span class="fnc">IN (<span class="val">4</span>, <span class="val">5</span>)</span>
+              <span class="cmt">-- задава се рейндж интервал за всяка стойност посочена в скобите</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+  TRUNCATE TABLE <span class="var">users</span>
+                 <span class="cmt">/* унищожава данните в таблицата,
+                    структурата и се запазва
+                    работи по-бързо от заявка с DELETE */</span>
+ </pre>
+ </div>
+
+<hr><br>
+<a name="alter" href="#cont">^</a>
+ <h2> =========   ALTER TABLE   =========</h2>
+
+  <div class="cmd">
+  <pre>
+  ALTER TABLE <span class="var">users</span>
+          ADD <span class="var">description</span> <span class="val">varchar(255) NOT NULL</span>,
+       CHANGE <span class="var">c_name new_c_name</span>
+       CHANGE <span class="var">col_name col_name</span> <span class="val">int(55)</span>
+  DROP COLUMN <span class="var">full_name</span>
+  </pre>
+  </div>
+
+ <div class="cmd">
+ <pre>
+     ALTER TABLE <span class="var">table_name</span>
+  ADD CONSTRAINT <span class="var">PK_id</span> <span class="cmt">-- constraints name</span>
+     PRIMARY KEY (<span class="var">id</span>)  <span class="cmt">-- more for composite key</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+     ALTER TABLE <span class="var">table_name</span>
+  ADD CONSTRAINT <span class="var">uq_email</span> <span class="cmt">-- constraints name</span>
+          UNIQUE (<span class="var">email</span>)  <span class="cmt">-- columns names</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+      ALTER TABLE <span class="var">table_name</span>
+  DROP CONSTRAINT <span class="var">constraint_name</span>
+                  <span class="cmt">/* Колоните могат да се създават модифицират и изтриват
+                                       Констроинтите само се създават и изтриват</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+   ALTER TABLE <span class="var">table_name</span>
+         ALTER <span class="var">column_name</span>
+  DROP DEFAULT
+               <span class="cmt">-- изтрива дефолтни стойности</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+     ALTER TABLE <span class="var">table_name</span>
+  ADD CONSTRAINT <span class="var">constraint_name</span>
+     FOREIGN KEY (<span class="var">col_id</span>)
+      REFERENCES <span class="var">other_table</span>(<span class="var">col_id</span>)
+  ON DELETE CASCADE ON UPDATE CASCADE
+ </pre>
+ </div>
+
+ <hr><br>
+ <a name="join" href="#cont">^</a>
+  <h2>=========== JOIN ===========</h2>
+
+ <div class="cmd">
+ <pre>
+      SELECT <span class="var">city</span>, <span class="var">country_name</span>
+        FROM <span class="var">cities</span>
+  INNER JOIN <span class="var">countries</span> USING (<span class="var">countryID</span>)
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+     SELECT <span class="var">country_name</span>, <span class="var">city</span>
+       FROM <span class="var">countries</span>
+ INNER JOIN <span class="var">cities</span> USING (<span class="var">countryID</span>)
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+   SELECT <span class="var">country_name</span>, cityv FROM <span class="var">countries</span>
+   LEFT JOIN <span class="var">cities</span> USING (<span class="var">countryID</span>)
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+      SELECT <span class="var">city</span>, <span class="var">country_name</span>, <span class="var">continent_name</span>
+        FROM <span class="var">cities</span>
+  INNER JOIN <span class="var">vcountries</span> USING(<span class="var">countryID</span>)
+  INNER JOIN <span class="var">continents</span> USING(<span class="var">continentID</span>)
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+   SELECT <span class="var">city</span>, <span class="var">country_name</span>, <span class="var">continent_name</span> FROM <span class="var">cities</span>
+   INNER JOIN <span class="var">countries</span> USING(<span class="var">countryID</span>)
+   INNER JOIN <span class="var">continents</span> ON <span class="var">continents.id</span> = <span class="var">countries.continentID</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+   SELECT <span class="var">city</span>, <span class="var">country_name</span>, <span class="var">continent_name</span> FROM <span class="var">cities</span>
+   INNER JOIN <span class="var">countries</span>  COU USING(<span class="var">countryID</span>)
+   INNER JOIN <span class="var">continents CON</span> ON <span class="var">CON.id</span> = <span class="var">COU.continentID</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+   SELECT <span class="var">city</span>, <span class="var">country_name</span>, <span class="var">continent_name</span> FROM <span class="var">cities</span>
+   INNER JOIN <span class="var">countries cu</span> USING(<span class="var">countryID</span>)
+   INNER JOIN <span class="var">continents co</span> ON <span class="var">co.continentID</span> = <span class="var">cu.continentID</span>
+              <span class="cmt">-- co и cu са псевдоними</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+   EXPLAIN
+   SELECT <span class="var">city</span>, <span class="var">country_name</span>, <span class="var">continent_name</span> FROM <span class="var">cities ct</span>
+   INNER JOIN <span class="var">countries cu</span> USING(<span class="var">countryID</span>)
+   INNER JOIN <span class="var">continents co</span> ON <span class="var">co.continentID</span> = <span class="var">cu.continentID</span>
+   WHERE <span class="var">ct.id</span> = <span class="val">1</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+   EXPLAIN
+   SELECT <span class="var">city</span>, <span class="var">country_name</span>, <span class="var">continent_name</span> FROM <span class="var">cities ct</span>
+   INNER JOIN <span class="var">countries cu</span> USING(<span class="var">countryID</span>)
+   INNER JOIN <span class="var">continents co</span> ON <span class="var">co.continentID</span> = <span class="var">cu.continentID</span>
+   WHERE <span class="var">cu.id</span> = <span class="val">1</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+   EXPLAIN
+   SELECT <span class="var">city</span>, <span class="var">country_name</span>, <span class="var">continent_name</span> FROM <span class="var">cities ct</span>
+   INNER JOIN <span class="var">countries cu</span> USING(<span class="var">countryID</span>)
+   INNER JOIN <span class="var">continents co</span> ON <span class="var">co.continentID</span> = <span class="var">cu.continentID</span>
+   WHERE <span class="var">cu.countryID</span> = <span class="val">1</span>
+ </pre>
+ </div>
+ INNER JOIN e много по-бърз от LEFT JOIN
+ mysql optimizer
+ резултатите от куеритата се запазват в кеша на mysql-a
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+       SELECT <span class="fnc">NOW()</span>, <span class="var">city</span>, <span class="var">country_name</span>, <span class="var">continent_name</span> FROM <span class="var">cities ct</span>
+   INNER JOIN <span class="var">countries cu</span> USING(<span class="var">countryID</span>)
+   INNER JOIN <span class="var">continents co</span> ON <span class="var">co.continentID</span> = <span class="var">cu.continentID</span>
+        WHERE <span class="var">cu.countryI</span> = <span class="val">1</span>
+              <span class="cmt">/* заради NOW() mysql изпълнява заявката при всеки F9,
+                 вместо да чете резултатите от кеша */ </span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+       SELECT <span class="var">id</span>, <span class="var">city</span>, <span class="var">country_name</span>, <span class="var">continent_name</span> FROM <span class="var">cities ct</span>
+   INNER JOIN <span class="var">countries cu</span> USING(<span class="var">countryID</span>)
+   INNER JOIN <span class="var">continents co</span> ON <span class="var">co.continentID</span> = <span class="var">cu.continentID</span>
+     -- WHERE <span class="var">cu.countryID</span> = <span class="val">1</span>
+     ORDER BY <span class="var">country_name</span>, <span class="var">city</span>, <span class="var">id</span>
+        LIMIT <span class="val">3</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+       SELECT <span class="var">id</span>, <span class="var">city</span>, <span class="var">country_name</span>, <span class="var">continent_name</span> FROM <span class="var">cities ct</span>
+   INNER JOIN <span class="var">countries cu</span> USING(<span class="var">countryID</span>)
+   INNER JOIN <span class="var">continents co</span> ON <span class="var">co.continentID</span> = <span class="var">cu.continentID</span>
+     -- WHERE <span class="var">cu.countryID</span> = <span class="val">1</span>;
+     ORDER BY <span class="var">country_name</span> DESC, <span class="var">city</span> DESC, <span class="var">id</span> DESC
+        LIMIT <span class="val">3</span>
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+ <div class="cmd">
+ <pre>
+
+ </pre>
+ </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+ ============== RELATIONS ================
+
+ FOREIGN KEY - свързва две колони от две таблици
+ добре е колоните да са с еднакви имена, но не е задължително
+
+ Добавяне на Foreign key в диби клиента HeidiSQL
+ 1 Влиза се в подчинената таблица
+ 2 Избира се таб Foreign key
+ 3 Цъка се Добави
+ 4 Задава се име на Foreign key-a
+ 5 Избира се от подчинената таблиса се избира колоната съдържаща
+
+ id-та от родителската таблица
+ 6 Избира се родителската таблица
+ 7 Избира се колоната id на родителската таблица
+ 8 Избират се опции за OnUpdate OnDelete
+
+ FOREIGN KEY  ни предпазва от неправилно манипулиране на данни
+ Foreign key не позволява изтриване на
+
+ Опции при настъпване на събитията
+ OnUpdate
+ OnDelete
+    RESTRICT - не позволява изтриване на запис от родителската
+
+ таблица, когато към него има свързани записи от други таблици
+
+    CASCADE - при изтриване на на запис в родителската таблица
+
+ изтрива автоматично и свъзаните с него запис в другите таблици
+
+    SET NULL - при изтриване на запис свързаните полета се сетват
+
+ на NULL т.е. в подчинената таблица полетата съдържащи id-то
+
+ изтрито от родителската таблица
+
+    NO ACTION - без действие
+
+
+ mysql workbench
+ dbforge
+ https://www.devart.com/dbforge/mysql/studio/download.html
+ https://www.youtube.com/watch?v=0UP-umMDLbY
+
+
+
+
+
+ CREATE TABLE category (
+ 	cat_id INT(11) NOT NULL AUTO_INCREMENT,
+ 	cat_name VARCHAR(50) NOT NULL,
+ 	parentID INT(11) NULL DEFAULT NULL,
+ 	PRIMARY KEY (cat_id));
+
+    ALTER TABLE category
+ ADD CONSTRAINT FK_category_category FOREIGN KEY (parentID)
+
+ REFERENCES category (cat_id);
+
+ SELECT c_main.cat_name, c_parent.cat_name FROM category c_main
+ INNER JOIN category c_parent ON c_parent.cat_id = c_main.parentID
+
+
+ SELECT NOW(), bt.*
+   FROM bigtable bt
+  WHERE name = 'name_522'
+
+
+
+
+
+
+
+  <div class="cmd">
+    <pre>
+      <span class="cmt">
+      -- редовете се закоментират с два минуса следвани от интервал
+       /*
+         Това е
+         блоков коментар
+         в SQL
+      */
+      /* NOW() - системна функция на SQL таймщамп
+         NOW() = CURDATE()
+         DATETIME format YYYY-mm-dd HH:ii:ss
+         F9 в hеidySQL изпълнява заявката (често се ползва и други клиенти)
+         Когато заявките в порозореца на db клиента (heidiSQL) са повече от една
+         трябва да се използва ; като разделител */
+       </span>
+
+    </pre>
+  </div>
+
+
+  ================   hеidySQL   ===============================
+  UPDATE table
+     SET col = 'value'
+   WHERE col2 = 'val2'
+
+
+  DELETE FROM table
+        WHERE col = 'val'
+
+  F9 в hеidySQL изпълнява заявката (често се ползва и други клиенти)
+  Когато заявките в порозореца на db клиента (heidiSQL) са повече от
+
+  една трябва да се използва ; като разделител
+
+
+  -- двете заявки се изпълняват отделно една след друга
+  DELETE FROM users WHERE user_id=1 OR user_id=2
+
+  DELETE FROM users WHERE user_id=3
+
+  -- двете заявки се изпълняват заедно
+  DELETE FROM users WHERE user_id=2 OR user_id=2;
+  DELETE FROM users WHERE user_id=3;
+
+  -- задава се рейндж интервал за всяка стойност посочена в скобите
+  DELETE FROM users
+        WHERE user_id IN (4,5)
+
+  -- интервалите са разделители
+
+  ALTER TABLE users
+  	ADD UNIQUE INDEX `user_name` (`user_name`);
+
+    ===========   ИНДЕКСИ   =======================
+    CREATE INDEX index_name
+              ON table_name(col1, col2...)
+
+    DROP INDEX table_name.index_name;
+
+    CREATE INDEX idx_passports_date_predaid ON passports(date,
+
+    predaID)
+    CREATE INDEX idx_passports_date ON passports(date)
+
+    -- DROP INDEX passports.idx_passports_date_predaid;
+    DROP INDEX idx_passports_date_predaid ON passports
+
+
+
+    ==============   АГРЕГИРАЩИ ФУНКЦИИ   ===============
+    SELECT SUM(POPULATION) FROM cities
+    SELECT SUM(POPULATION) peo FROM cities
+    SELECT SUM(POPULATION) AS peo FROM cities
+
+
+    SELECT GROUP_CONCAT(city) FROM cities
+
+    SELECT GROUP_CONCAT(city),            -- конкат. на вс. ст. в кол.
+           GROUP_CONCAT(DISTINCT country_id),-- конкат. на уник. ст.
+           SUM(POPULATION),               -- сума по колона
+           COUNT(*)                       -- бр. колони
+           MIN(POPULATION),               -- min ст. в колона
+           MAX(id),                       -- max ст. в колона
+           ROUND(AVG(POPULATION), 0)      -- до нула знака след запет
+      FROM cities
+
+
+        SELECT GROUP_CONCAT(city),
+               GROUP_CONCAT(DISTINCT country_id),
+               SUM(POPULATION) peo,
+               COUNT(*)
+               MIN(POPULATION),
+               MAX(id),
+               ROUND(AVG(POPULATION), 0)
+          FROM cities
+    INNER JOIN contries USING(country_id)
+         WHERE ...
+      GROUP BY countri_id - изп. горните ф. за вс. уник ст. в кол.
+        HAVING ...
+      ORDER BY peo DESC
+         LIMIT ...
+
+    GROUP BY - показва на колко групи да стане това агрегиране
+    ORDER BY - се изп. по=> => може да ползв. алаеси
+    ORDER BY col1, col2 - sort po col1 posle po col2, ako w kol1 ima
+
+    ednakwi st. togawa se wkl sort po kol2 za tezi st..
+    функциите не се префиксират алаъсите на таблиците се слагат пред
+
+    колоните, а алаъсите на db се слагат пред таблиците
+
+      SELECT country_id
+             SUM(POPULATION)
+        FROM cities
+    GROUP BY country_id
+
+    SELECT COUNT(*) FROM table_name -- br recors
+
+    SHOW CREATE TABLE table_name w konzolata pokazwa sql coda
+    describe table_name - pokazwa strukturata w tabl wid
+
+    ednoposo4no kriptirane a->algoritym->b no b!->a
+    md5
+    sha256
+    sha512
+
+    STR_TO_DATE('11/5/2017 10:00', '%m/%d/%Y %H:%i')
+
+
+
+
+    =============   TRANSACTION   ==============
+
+    Transaction - обединяване на операции към бд в група
+    Транзакциите включват само дейта манипулейшън команди
+    командите модифизиращи структурата на дб не могат да се включват
+
+    транзакции
+
+    Кохгато имаме повече от една операция към бд, която модифицира
+
+    данните ние можем логически да искаме да се откажем по средата
+    Модифициращи данни операции - INSERT INTO, UPDATE, DELETE FROM
+
+    START TRANSACTION
+       INSERT INTO table_name(col1,col2...) values(val1, val2,...)
+       ...
+       ...
+    COMMIT (or ROLLBACK)
+
+    Ако чрез транзакция инсъртнеш 3 записа в бд никой друг клиент на
+
+    бд няма да ги види преди да си написал COMMIT, но ако ти напишеш
+
+    заявка със SELECT * ще видиш и тези три записа
+
+
+    Класически пример приложение за финасови отношения
+    Имаме потребители и всеки потребител има портфейл
+    Потребител А дава на потребител Б 5 лв
+    това се записва в таблицата 2 инсърта
+    Ако след 1 инсърт възникне логическа или програмна грешка
+    няма смисъл да се изпълнява втория инсърт
+
+
+
+    За да бъде една база данни транзакционна трябва да изпълнява
+
+    следните основни принципи
+
+    A - Atomcity    влизат всички операции или никоя all or nothing
+    C - Consistency
+    I - Isolation
+    D - Durability
+
+    Транзакции в PHP
+
+    $db = new PDO("mysql:host=$db_host;dbname=$db_name",
+        $db_user,
+        $db_pass,
+        [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
+
+
+
+    $db->beginTransaction();
+    // ако не потвърдиш с commit все едно си направил rollback
+    $db->commit();
+
+
+    $db_host = 'localhost';
+    $db_name = 'test';
+    $db_user = 'root';
+    $db_pass = '1234';
+
+    $db = new PDO("mysql:host=localhost;dbname=test", 'root', '',
+                  [PDO::ATTR_ERRMODE=>PDO::ERRMODE_EXCEPTION]);
+
+    $db->beginTransaction();
+
+    $query = $db->prepare(
+                'INSERT INTO users(user_name)
+                      VALUES (:user_name)
+                '
+             );
+    $user_name = 'Gosho3';
+    $query->bindParam('user_name', $user_name);
+
+    try {
+        $query->execute();
+        echo $db->lastInsertId() . PHP_EOL;
+
+
+        $user_name = 'Gosho2';
+        $query->execute();
+        echo $db->lastInsertId() . PHP_EOL;
+
+        $db->commit();
+    }
+    catch (Exception $e){
+        $db->rollBack();
+        echo $e->getMessage();
+    }
+
+    //id-то винаги се изхабява защото се заявява първо
+
+
+
+
+    =================   SQL Functions   ================
+
+
+    DELIMITER ;; -- променя разделителя за край на ред
+
+    CREATE FUNCTION concat_name(
+    	fname varchar(127),
+    	lname varchar(127)
+    )  RETURNS varchar(255)
+    BEGIN
+    	RETURN CONCAT(fname, ' ', lname);
+    END;;
+
+    DELIMITER ; -- променя разделителя за край на ред
+
+    -- като се run-не функ. става част от db
+
+    SELECT concat_name('Pesho', 'Goshev');
+
+
+    SELECT concat_name(first_name, last_name)
+      FROM users;
+
+
+    DROP FUNCTION concat_name;
+    -- изтрива функ. от db
+
+
+    SQL функциите не могат да се редактират
+    трябва да се изтрие старата и да се напише цялата на ново
+    Това може да се избегне с
+
+    DROP FUNCTION IF EXISTS concat_name;;
+
+    CREATE FUNCTION concat_name(
+    ...
+
+    ------------------------------
+
+    DELIMITER ;;
+
+    DROP FUNCTION IF EXISTS concat_name;;
+    CREATE FUNCTION concat_name(
+    	fname varchar(127),
+    	lname varchar(127)
+    )  RETURNS varchar(255)
+    BEGIN
+    	DECLARE full_name VARCHAR(255);
+    	SET full_name = CONCAT(fname, ' ', lname);
+    	IF LENGTH(full_name)<20 THEN
+    		SET full_name = 'zzzzzzz';
+    	END IF;
+    	RETURN full_name;
+    END;;
+
+    DELIMITER ;
+
+    SQL функциите нямат опционални параметри
+    SQL нямат масиви, няма класически цикли (има курсор),
+
+    Функциите и процедурите може да се извикат и от други бд с кото
+
+    преди името на функцията се изпише името на бд, която съдържа
+
+    функцията и точка след него
+
+    =================   SQL Procedures   ================
+
+    SQL проседурите не връщат резултат, но всичките им параметри могат
+
+    да са входни, изходни или входно-изходни
+    проседурите не могат да се вложат в селект
+
+    CREATE PROCEDURE proc(
+    	INOUT Param1 INT
+    )
+    BEGIN
+
+
+    END
+
+
+    CALL proc(Param1);
+    -- ----------------
+    DELIMITER ;;
+
+    DROP PROCEDURE IF EXISTS get_sales;
+    CREATE PROCEDURE get_sales(OUT amount_total FLOAT)
+    BEGIN
+        SELECT SUM(amount) INTO amount_total FROM sales;
+    END;;
+
+    DELIMITER ;
+    -- ---------------
+
+    >mysqldump -R db_name - eksport na db ( -R екпорт и на ф. и проц.)
+
+
+    ================   TRIGGERS   ====================
+
+    Тригерите се изпълняват автоматично при настъпване на определени
+
+    събития INSERT, UPDATE, DELETE като може да се изпълнят
+
+    непосредствено преди изпълнение на събитието или след него т.е.
+    имаме 6 вида тригери
+    Преди инсърт и след инсърт, преди ъпдейт и след ъпдейт, и преди
+
+    дилийт и след дилийт
+
+
+    Тригер се прави за конкретна таблица (не може за цяла бд и sql)
+    Един тригер - една таблица, един момент, едно събитие
+
+
+    Може да се използва за валидация на данните.
+    Идеята е кво и да става във пхп в базадата да няма омазани данни
+
+        CREATE DEFINER=`root`@`localhost` TRIGGER `triger_name`
+      BEFORE UPDATE ON `users`
+    FOR EACH ROW BEGIN
+    	IF NEW.user_name <> OLD.user_name THEN
+    		SET NEW.changes = OLD.changes + 1;
+    	END IF;
+    END
+
+    NEW. - достъп до всяка нова  стойност
+    OLD. - достъп до всяка стара стойност
+
+
+
+
+    CREATE DEFINER=`root`@`localhost` TRIGGER `triger`
+    BEFORE UPDATE ON `users`
+    FOR EACH ROW BEGIN
+    	IF NEW.user_name <> OLD.user_name THEN
+    		SET NEW.changes = OLD.changes + 1;
+    	END IF;
+    	INSERT INTO log (notes)
+    	VALUE (CONCAT('User change: ',OLD.user_name,'-
+
+    >',NEW.user_name));
+    END
+
+    Този тригер е свързан към таблица users в момента ПРЕДИ събитието
+
+    Ъпдейт
+    При всяка промяна на user_name добавя 1 към стойността на changes
+    ри всеки ъпдейт на данни от таблицата users тригерът добавя и
+
+    запис в таблицата лог, който съдържа таймщамп и старата и новата
+
+    стойност на user_name
+
+
+      CREATE TRIGGER total_sales
+    BEFORE INSERT ON sales
+    FOR EACH ROW SET @sum = @sum + NEW.amount;
+
+
+
+    ==============   VIEWS   ==================
+
+    CREATE VIEW deal AS
+         SELECT sales.sale_dt, sales.amount, cars.make, cars.model,
+    	         cars.`year`, customers.first_name,
+
+    customers.last_name
+    	    FROM sales, cars, customers
+    	   WHERE sales.car_id = cars.car_id
+    	     AND sales.customer_id = customers.customer_id;
+
+
+
+
+
+    =================   HTTP   =============================
+
+    Firefox Developer edition
+    Shift + F2 - отваря конзолата
+    rulers + Enter - показва/скрива линийките
+    Ctr + Shift + M - тест за сайз адаптивност на сайта
+    firebug is dead
+    Wire shark - snifer - слуша трафика на ниско ниво
+    F12 - отваря developer tools (за firefox и chrom)
+
+    Всеки request/response има header, може да няма body
+    Хедърът има първи ред, а останалите са от типа
+    ime:stojnost
+    Header и Body се разделят от 1 празен ред.
+    Всичко до празния ред е header, а всичко под празния ред е body
+    1 ред от Header-а на request-a съдържа протокол, метод
+    1 ред от Header-а на response-a съдържа протокол код на резултат
+    1xx - information
+    2xx - Success       200 OK
+    3xx - redirect      301 Moved Permanently, 304 NotModified
+    4xx - client errors 404
+    5xx - server errors 500)
+    Повечето сайтове имат код за лайк диз пейдж
+    или код за коментарите
+    или код за сприятеляване
+    или google pixel - код за следене
+
+    Вие инсталирате във вашия сайт код за някаква услуга, която ви
+
+    кефи (някаква услуга да ви лайкват страницата), но така ФБ
+
+    получават информация за всеки потребител на вашия сайт
+    Ретаргетинг отиваш на едно место и после на други места ти
+
+    рекламират за първото място
+    По ип не е достатъчно и за това се визмат и допълнителни
+
+    информация ОС + инсталирани ъпдейти, версия на браузъра и и-таг
+
+    >telnet php.net 80
+    Trying ...
+    Connected to php.net
+    > GET / HTTP/1.1
+    > Host: php.net
+    >Enter
+    >Enter
+    ---
+    GET / HTTP/1.1
+    Host: php.net
+
+
+    ---
+
+
+    HTML - структуриране на иформацията
+    xml - razhitelna
+    json
+    yaml
+    tuig
+    <! - ne e tag a instrukciq
+
+
+
+    ===================   FORM   ====================
+
+
+    POST GET REQUEST
+    bugzilla
+    <input  type="submit" name="submit" value="Click me 1"/>
+    <button type="submit" name="submit" value="2"/>Click me</button>
+
+    checkbox когато не е чекнат не се изпраща в масива
+    checkbox има value се изпраща зададената в тага стойностт
+    ако няма атрибут value в тага checkbox се изпраща on
+
+    <input type="reset" name="reset" value="Clear"/> чисти формата
+    Селектите са алтернатива на радиобутони и чекбоксове
+
+    клиентска валидация
+
+    сървърна валидация
+
+
+    error_log('sdadasd'); - добавя ерор лог в апача
+
+
+    htmlspecialchars($_GET['name']); // конвертира специалните символи
+
+    в &xxx;
+    // & => &amp; " => &quote;  ' => &039;  < => &lt;  > => &gt;
+
+
+
+    =====================   EXERCISE   =========================
+
+
+    MVC Framework - разделя работата с базата данни от контрола на
+
+    данните и от визуализацията
+
+
+    Визуализацията (HTML, CSS i JavaScript) е на едно място (view)
+    PHP получава данните от различните форми в съответните контролери
+    Когато трябва да се свързваме с базата данни това го правим
+
+    детабейз класовете (в случчая моделите)
+
+    get_class_methods - връща арей с имената на методите на класа
+
+    ===============   $$   ====================
+
+    $$
+
+
+    $var = 'pesho';
+
+    $pesho = 123;
+
+    echo $$var; // 123
+
+
+    Глобални променливи и масиви
+
+
+    $_GET $_POST $_REQUEST $_FILES $_SERVER $_COOKIES
+
+    Всяко куки е ограночено само до сървъра от който е изпратено
+    Всяко куки важи за определен домейн
+
+    https e http върху ssl
+
+    На всякъде където ще ползваме сесийния супер глобален масив д
+
+    имаме session_start();
+    Да ползваме сесиите за сензетивната информация т.е. такава, която
+
+    неискаме да бъде манипулирана от поребителя
+    кукитата за цялата юзер рилей информация да му пазиш бацкгроунда
+
+    tracert
+
+
+    1. Връзка с база данни
+    2. Писане на HTML-и по екрана
+    3. Работа с формуляри (данни)
+    4. Работа със сесии
+    5. Обвивка около PDO обекта, която изцяло разчита на интерфейси
+
+    5.1. (DatabaseInterface) Обект, който приема
+    $query (заявка) и връща Statement
+    5.2. (StatementInterface) В Statement трябва да
+    има САМО execute() и да няма fetch!!!
+    И този execute() да връща ДРУГ обект отново,
+    например Resultset, който вече да има fetch()
+    5.3. (ResultsetInterface) в който има fetch()
+
+    pdo->errorInfo(); - връща масив с грешките до момента
+
+    $query = $db->prepare('SELECT * FROM users');
+    $query->execute
+    while ($user=$query->fetchObject(User::class)){
+
+    }
+    /** @var User $user */
+    fetchObject(Class1::class) казва дай ми клас и аз ще ти го напълня
+
+    с дании стига пропъртитата да отговарят на полетата на таблицата,
+
+    ako nqma powe` danni wrashta false
+
+
+    public function fetch($className){
+       while($row = $this->pdoStatement->fetchObject($className)){
+          yield $row;
+       }
+    }
+    това връща следващия елемент на цикъла при всяко ново извикван на
+
+    функцията
+
+
+
+</body>
+</html>
