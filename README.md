@@ -1,0 +1,2 @@
+# sql
+mariaDB queries
